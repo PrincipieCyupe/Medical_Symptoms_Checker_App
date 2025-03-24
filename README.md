@@ -1,4 +1,4 @@
-** MEDIASSIST SYMPTOM CHECKER**
+MEDIASSIST SYMPTOM CHECKER
 -----------------------------------
 
 ** Table of Contents**
