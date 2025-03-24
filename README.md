@@ -1,7 +1,7 @@
-**# MEDIASSIST SYMPTOM CHECKER**
+** MEDIASSIST SYMPTOM CHECKER**
 -----------------------------------
 
-**# Table of Contents**
+** Table of Contents**
 
 1. Overview
 2. Features
@@ -14,14 +14,14 @@
 9. Credits and Acknowledgments
 -----------------------------------------------------------------------------------------------------
 
-**#1. OVERVIEW**
+**1. OVERVIEW**
 -------------------------
 
 MediAssist Symptom Checker is a user-friendly web application designed to help users identify potential medical conditions based on their symptoms. The application guides users through a structured process of symptom selection, personal health information input, and generates a comprehensive health assessment using AI-powered medical diagnosis.
 
 Important Disclaimer: This application is for educational purposes only and should not replace professional medical advice. Always consult with a qualified healthcare provider for medical concerns.
 
-**#2. FEATURES**
+**2. FEATURES**
 ------------------------------------------
 
  **2.1 Interactive Symptom Selection**
@@ -45,12 +45,12 @@ Important Disclaimer: This application is for educational purposes only and shou
 - Mobile-first design approach
 - Step-by-step guided process with progress indicators
 - Accessible design considerations
-
- ** #3. DEMO**
+  
+ **3. DEMO**
  --------------------
  Open this link to access Medical Symptom Checker; [https://www.principie.tech](url)
  
- **#4. Technology used:**
+ **4. Technology used:**
  ---------------------------------
  - Frontend:
       -HTML: for structuring a webpage
@@ -61,13 +61,13 @@ Important Disclaimer: This application is for educational purposes only and shou
 - Deployment:
     Deployed on nginx and haproxy for load balancing
 
-  **#5. API INTERACTION**
+  **5. API INTERACTION**
   -------------------------------------
 The application integrates with the AI Medical Diagnosis API from RapidAPI to process symptoms and provide potential diagnoses. This API analyzes user-provided symptoms against a comprehensive medical database to identify potential conditions and offers recommendations.
 
 API Documententation: via this link to access the documentation [https://rapidapi.com/bilgisamapi-api2/api/ai-medical-diagnosis-api-symptoms-to-results](url)
 
-**#6 LOCAL DEVELOPMENT SETUP**
+**6 LOCAL DEVELOPMENT SETUP**
 ----------------------------------
 
 Follow these steps to set up the project for local development:
@@ -79,7 +79,7 @@ Follow these steps to set up the project for local development:
    OPEN THE PROJECT:
      You can simply open the index.html file in your browser as this is a purely front-end application
 
-**#7 DEPLOYMENT**
+**7 DEPLOYMENT**
 ------------------------------------
 **7.1 Prerequisites**
 Two web servers:
@@ -94,13 +94,13 @@ Load balancer:
 **7.3 SSL certificate**
   -  From lb-01 , I created a certificate using **certbot**, issued by Letsencrypt and signed by it. So, it can be secure as it is.
     
-**#8 CHALLENGES AND SOLUTIONS**
+**8 CHALLENGES AND SOLUTIONS**
 -------------------------------------------------
 **API Rate Limiting**
      Challenge: RapidAPI imposes request limits on free tier accounts.
      solution: upgrading to a paid plan
 
-**#9 CREDITS and ACKNOWLEDGEMENT**
+**9 CREDITS and ACKNOWLEDGEMENT**
 ----------------------------------------------------
 
 API USED: ** AI MEDICAL DIAGNOSIS API from RapidAPI**
