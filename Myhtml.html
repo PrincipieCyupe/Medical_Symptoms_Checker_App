@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Symptom Checker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0f0ff',
+              100: '#e0e0ff',
+              200: '#c2c1ff',
+              300: '#a3a2ff',
+              400: '#8584ff',
+              500: '#5D5CDE',
+              600: '#4a49b7',
+              700: '#3a3990',
+              800: '#2b2a6b',
+              900: '#1c1c46',
+            },
+            secondary: {
+              50: '#f5f7fb',
+              100: '#ebeef3',
+              200: '#d8dde6',
+              300: '#b9c3d4',
+              400: '#96a5bb',
+              500: '#7789a1',
+              600: '#5d6d86',
+              700: '#4a586d',
+              800: '#3e4a5c',
+              900: '#353f4d',
+            },
+            success: {
+              50: '#ecfdf5',
+              500: '#10b981',
+              600: '#059669',
+            },
+            warning: {
+              50: '#fffbeb',
+              500: '#f59e0b',
+              600: '#d97706',
+            },
+            danger: {
+              50: '#fef2f2',
+              500: '#ef4444',
+              600: '#dc2626',
+            },
+            background: {
+              light: '#FFFFFF',
+              dark: '#181818',
+            },
+            card: {
+              light: '#F9FAFB',
+              dark: '#262626',
+            }
+          },
+          boxShadow: {
+            'card': '0 4px 12px rgba(0, 0, 0, 0.05)',
+            'card-dark': '0 4px 12px rgba(0, 0, 0, 0.2)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .animate-pulse-slow {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .animate-slide-in {
+      animation: slideIn 0.3s ease forwards;
+    }
+
+    /* Progress bar animation */
+    @keyframes fillProgress {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+    .animate-progress {
+      animation: fillProgress 0.8s ease-out forwards;
+    }
+
+    /* Custom scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(93, 92, 222, 0.5);
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(93, 92, 222, 0.7);
+    }
+
+    /* Step indicators */
+    .step-indicator {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s ease;
+    }
+
+    .step-indicator::after {
+      content: '';
+      position: absolute;
+      height: 3px;
+      background-color: #CBD5E1;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 100%;
+      width: calc(100% - 20px);
+      z-index: -1;
+    }
+
+    .step-indicator:last-child::after {
+      display: none;
+    }
+
+    .step-active {
+      background-color: #5D5CDE;
+      color: white;
+      box-shadow: 0 0 0 4px rgba(93, 92, 222, 0.2);
+    }
+
+    .step-completed {
+      background-color: #5D5CDE;
+      color: white;
+    }
+
+    .step-completed::after {
+      background-color: #5D5CDE;
+    }
+
+    /* Symptom card animation */
+    .symptom-card {
+      transition: all 0.2s ease-out;
+    }
+    .symptom-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Ripple effect on buttons */
+    .btn-ripple {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-ripple:after {
+      content: "";
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+      background-repeat: no-repeat;
+      background-position: 50%;
+      transform: scale(10, 10);
+      opacity: 0;
+      transition: transform .5s, opacity 1s;
+    }
+
+    .btn-ripple:active:after {
+      transform: scale(0, 0);
+      opacity: .3;
+      transition: 0s;
+    }
+
+    .dark .btn-ripple:after {
+      background-image: radial-gradient(circle, #333 10%, transparent 10.01%);
+    }
+
+    /* Category selection styles */
+    .category-button {
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .category-button:hover {
+      transform: translateY(-2px);
+    }
+
+    .category-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: width 0.3s ease;
+      z-index: 0;
+    }
+
+    .category-button:hover::before {
+      width: 100%;
+    }
+
+    .category-button-selected {
+      background-color: #5D5CDE;
+      color: white;
+    }
+
+    /* Glow effect for interactive elements */
+    .interactive-glow:hover {
+      box-shadow: 0 0 10px rgba(93, 92, 222, 0.5);
+    }
+    .dark .interactive-glow:hover {
+      box-shadow: 0 0 10px rgba(93, 92, 222, 0.7);
+    }
+
+    /* Tag styles */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 50px;
+      font-size: 14px;
+      margin: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tag i {
+      margin-left: 6px;
+      font-size: 10px;
+    }
+
+    .tag:hover {
+      transform: scale(1.05);
+    }
+
+    .tag-selected {
+      background-color: #5D5CDE;
+      color: white;
+    }
+
+    .dark .tag-selected {
+      background-color: #5D5CDE;
+      color: white;
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-200 transition-colors duration-200">
+<div class="min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="bg-white dark:bg-gray-900 shadow-sm py-3 sticky top-0 z-10">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <a href="https://www.principie.tech" target="_blank" class="flex items-center hover:opacity-80 transition-opacity">
+        <div class="text-primary-500 text-2xl mr-2">
+          <i class="fas fa-heartbeat"></i>
+        </div>
+        <h1 class="text-xl font-bold">MediAssist <span class="text-primary-500">Symptom Checker</span></h1>
+      </a>
+      <div class="flex items-center space-x-2">
+        <button id="helpBtn" class="p-2 text-gray-500 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 rounded-full transition">
+          <i class="fas fa-question-circle text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto px-4 py-6 max-w-6xl">
+    <!-- Progress Steps -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center max-w-3xl mx-auto">
+        <div class="step-indicator step-active" id="step1">1</div>
+        <div class="step-indicator" id="step2">2</div>
+        <div class="step-indicator" id="step3">3</div>
+        <div class="step-indicator" id="step4">4</div>
+      </div>
+      <div class="flex justify-between max-w-3xl mx-auto mt-2 text-xs sm:text-sm">
+        <div class="text-center w-1/4 px-1 text-primary-500 font-medium">Symptoms</div>
+        <div class="text-center w-1/4 px-1 text-gray-500 dark:text-gray-400">Patient Info</div>
+        <div class="text-center w-1/4 px-1 text-gray-500 dark:text-gray-400">Review</div>
+        <div class="text-center w-1/4 px-1 text-gray-500 dark:text-gray-400">Results</div>
+      </div>
+    </div>
+
+    <!-- Step content container -->
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-card dark:shadow-card-dark p-6 mb-8 transition-all duration-300">
+      <!-- Step 1: Symptoms -->
+      <div id="step1Content" class="animate-fade-in">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
+          <i class="fas fa-clipboard-list text-primary-500 mr-2"></i>
+          Select Your Symptoms
+        </h2>
+
+        <div class="mb-6">
+          <div class="flex flex-wrap gap-2 mb-4">
+            <button class="category-button px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition" data-category="all">All</button>
+            <button class="category-button px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition" data-category="head">Head & Face</button>
+            <button class="category-button px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition" data-category="chest">Chest & Heart</button>
+            <button class="category-button px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition" data-category="abdomen">Abdomen</button>
+            <button class="category-button px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition" data-category="skin">Skin</button>
+            <button class="category-button px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition" data-category="general">General</button>
+          </div>
+
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-search text-gray-400"></i>
+            </div>
+            <input id="symptomSearch" type="text" placeholder="Search symptoms..." class="pl-10 pr-4 py-3 w-full rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 text-base">
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold mb-3 text-gray-700 dark:text-gray-300">Common Symptoms</h3>
+          <div id="symptomGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <!-- Symptoms will be added here dynamically -->
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold mb-3 text-gray-700 dark:text-gray-300">Your Selected Symptoms</h3>
+          <div id="selectedSymptoms" class="min-h-16 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-wrap gap-2">
+            <p id="noSymptomsMessage" class="text-gray-500 dark:text-gray-400 w-full text-center py-2">No symptoms selected. Please select at least one symptom.</p>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button id="nextToStep2" class="btn-ripple px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-md font-semibold transition shadow-md hover:shadow-lg flex items-center">
+            Continue to Patient Info
+            <i class="fas fa-chevron-right ml-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Patient Information -->
+      <div id="step2Content" class="hidden animate-fade-in">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
+          <i class="fas fa-user-circle text-primary-500 mr-2"></i>
+          Patient Information
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div>
+            <div class="mb-4">
+              <label for="patientName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+              <input type="text" id="patientName" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 text-base" placeholder="Enter your full name">
+            </div>
+
+            <div class="mb-4">
+              <label for="patientAge" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Age</label>
+              <input type="number" id="patientAge" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 text-base" min="1" max="120" value="35">
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gender</label>
+              <div class="flex space-x-4">
+                <label class="inline-flex items-center">
+                  <input type="radio" name="gender" value="male" class="form-radio h-5 w-5 text-primary-500">
+                  <span class="ml-2 text-gray-700 dark:text-gray-300">Male</span>
+                </label>
+                <label class="inline-flex items-center">
+                  <input type="radio" name="gender" value="female" class="form-radio h-5 w-5 text-primary-500" checked>
+                  <span class="ml-2 text-gray-700 dark:text-gray-300">Female</span>
+                </label>
+                <label class="inline-flex items-center">
+                  <input type="radio" name="gender" value="other" class="form-radio h-5 w-5 text-primary-500">
+                  <span class="ml-2 text-gray-700 dark:text-gray-300">Other</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="patientHeight" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Height (cm)</label>
+              <input type="number" id="patientHeight" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 text-base" min="50" max="250" value="165">
+            </div>
+
+            <div class="mb-4">
+              <label for="patientWeight" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Weight (kg)</label>
+              <input type="number" id="patientWeight" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 text-base" min="1" max="300" value="65">
+            </div>
+          </div>
+
+          <div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Medical History</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input id="medicalHistoryInput" type="text" placeholder="Type a condition and press Enter" class="pl-10 pr-4 py-3 w-full rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 text-base">
+              </div>
+              <div id="medicalHistoryTags" class="mt-2 min-h-10 flex flex-wrap">
+                                    <span class="tag bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                        hypertension <i class="fas fa-times"></i>
+                                    </span>
+                <span class="tag bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                        seasonal allergies <i class="fas fa-times"></i>
+                                    </span>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Medications</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-pills text-gray-400"></i>
+                </div>
+                <input id="medicationsInput" type="text" placeholder="Type a medication and press Enter" class="pl-10 pr-4 py-3 w-full rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 text-base">
+              </div>
+              <div id="medicationTags" class="mt-2 min-h-10 flex flex-wrap">
+                                    <span class="tag bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                        lisinopril 10mg <i class="fas fa-times"></i>
+                                    </span>
+                <span class="tag bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                        cetirizine 10mg <i class="fas fa-times"></i>
+                                    </span>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Allergies</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-allergies text-gray-400"></i>
+                </div>
+                <input id="allergiesInput" type="text" placeholder="Type an allergy and press Enter" class="pl-10 pr-4 py-3 w-full rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 text-base">
+              </div>
+              <div id="allergyTags" class="mt-2 min-h-10 flex flex-wrap">
+                                    <span class="tag bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                        penicillin <i class="fas fa-times"></i>
+                                    </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+          <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Lifestyle</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Smoking</label>
+                <select id="lifestyleSmoking" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 text-base">
+                  <option value="false" selected>No</option>
+                  <option value="occasional">Occasional</option>
+                  <option value="regular">Regular</option>
+                  <option value="heavy">Heavy</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Alcohol Consumption</label>
+                <select id="lifestyleAlcohol" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 text-base">
+                  <option value="none">None</option>
+                  <option value="occasional" selected>Occasional</option>
+                  <option value="moderate">Moderate</option>
+                  <option value="heavy">Heavy</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Exercise</label>
+                <select id="lifestyleExercise" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 text-base">
+                  <option value="none">None</option>
+                  <option value="light">Light</option>
+                  <option value="moderate" selected>Moderate</option>
+                  <option value="active">Active</option>
+                  <option value="very active">Very Active</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Diet</label>
+                <select id="lifestyleDiet" class="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 text-base">
+                  <option value="poor">Poor</option>
+                  <option value="average">Average</option>
+                  <option value="balanced" selected>Balanced</option>
+                  <option value="excellent">Excellent</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between mt-8">
+          <button id="backToStep1" class="px-6 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md font-semibold transition flex items-center">
+            <i class="fas fa-chevron-left mr-2"></i>
+            Back to Symptoms
+          </button>
+          <button id="nextToStep3" class="btn-ripple px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-md font-semibold transition shadow-md hover:shadow-lg flex items-center">
+            Review Information
+            <i class="fas fa-chevron-right ml-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3: Review -->
+      <div id="step3Content" class="hidden animate-fade-in">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
+          <i class="fas fa-clipboard-check text-primary-500 mr-2"></i>
+          Review Your Information
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300 flex items-center">
+              <i class="fas fa-heartbeat text-primary-500 mr-2"></i>
+              Symptoms
+            </h3>
+            <div id="reviewSymptoms" class="flex flex-wrap gap-2">
+              <!-- Selected symptoms will appear here -->
+            </div>
+            <button id="editSymptoms" class="mt-4 text-sm text-primary-500 hover:text-primary-600 flex items-center">
+              <i class="fas fa-edit mr-1"></i> Edit symptoms
+            </button>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300 flex items-center">
+              <i class="fas fa-user-circle text-primary-500 mr-2"></i>
+              Patient Information
+            </h3>
+            <ul class="space-y-2 text-gray-700 dark:text-gray-300">
+              <li class="flex items-start">
+                <span class="text-gray-600 dark:text-gray-400 w-1/3">Name:</span>
+                <span id="reviewName" class="font-medium">-</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-gray-600 dark:text-gray-400 w-1/3">Age:</span>
+                <span id="reviewAge" class="font-medium">35</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-gray-600 dark:text-gray-400 w-1/3">Gender:</span>
+                <span id="reviewGender" class="font-medium">Female</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-gray-600 dark:text-gray-400 w-1/3">Height:</span>
+                <span id="reviewHeight" class="font-medium">165 cm</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-gray-600 dark:text-gray-400 w-1/3">Weight:</span>
+                <span id="reviewWeight" class="font-medium">65 kg</span>
+              </li>
+            </ul>
+            <button id="editPatientInfo" class="mt-4 text-sm text-primary-500 hover:text-primary-600 flex items-center">
+              <i class="fas fa-edit mr-1"></i> Edit information
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-5">
+            <h3 class="text-md font-semibold mb-3 text-gray-700 dark:text-gray-300">Medical History</h3>
+            <div id="reviewMedicalHistory" class="flex flex-wrap gap-2">
+              <!-- Medical history will appear here -->
+            </div>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-5">
+            <h3 class="text-md font-semibold mb-3 text-gray-700 dark:text-gray-300">Current Medications</h3>
+            <div id="reviewMedications" class="flex flex-wrap gap-2">
+              <!-- Medications will appear here -->
+            </div>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-5">
+            <h3 class="text-md font-semibold mb-3 text-gray-700 dark:text-gray-300">Allergies</h3>
+            <div id="reviewAllergies" class="flex flex-wrap gap-2">
+              <!-- Allergies will appear here -->
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-5 mb-8">
+          <h3 class="text-md font-semibold mb-3 text-gray-700 dark:text-gray-300">Lifestyle</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">Smoking</p>
+              <p id="reviewSmoking" class="font-medium">No</p>
+            </div>
+            <div>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">Alcohol</p>
+              <p id="reviewAlcohol" class="font-medium">Occasional</p>
+            </div>
+            <div>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">Exercise</p>
+              <p id="reviewExercise" class="font-medium">Moderate</p>
+            </div>
+            <div>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">Diet</p>
+              <p id="reviewDiet" class="font-medium">Balanced</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between">
+          <button id="backToStep2" class="px-6 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md font-semibold transition flex items-center">
+            <i class="fas fa-chevron-left mr-2"></i>
+            Back to Patient Info
+          </button>
+          <button id="submitDiagnosis" class="btn-ripple px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-md font-semibold transition shadow-md hover:shadow-lg flex items-center">
+            Get Diagnosis
+            <i class="fas fa-stethoscope ml-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4: Results -->
+      <div id="step4Content" class="hidden animate-fade-in">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
+          <i class="fas fa-clipboard-list-check text-primary-500 mr-2"></i>
+          Diagnosis Results
+        </h2>
+
+        <!-- Loading state -->
+        
+        <div id="diagnosisLoading" class="py-16">
+          <div class="flex flex-col items-center justify-center">
+            <div class="relative w-20 h-20 mb-4">
+              <div class="absolute top-0 left-0 w-full h-full border-4 border-gray-200 dark:border-gray-700 rounded-full"></div>
+              <div class="absolute top-0 left-0 w-full h-full border-4 border-t-primary-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+            </div>
+            <p class="text-lg text-gray-600 dark:text-gray-400 animate-pulse-slow">Analyzing your symptoms...</p>
+            <div class="mt-4 max-w-md w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
+              <div class="bg-primary-500 h-2.5 rounded-full animate-progress"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error state -->
+
+        <div id="diagnosisError" class="hidden py-12">
+          <div class="flex flex-col items-center justify-center text-center">
+            <div class="w-20 h-20 flex items-center justify-center bg-red-100 dark:bg-red-900 text-red-500 dark:text-red-300 rounded-full mb-4">
+              <i class="fas fa-exclamation-triangle text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Unable to Get Diagnosis</h3>
+            <p id="errorMessage" class="text-gray-600 dark:text-gray-400 mb-6 max-w-lg">There was an error processing your request. Please try again later.</p>
+            <button id="tryAgainBtn" class="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-md font-semibold transition shadow-md hover:shadow-lg">
+              Try Again
+            </button>
+          </div>
+        </div>
+
+        <!-- Results content -->
+
+        <div id="diagnosisResults" class="hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Possible Conditions -->
+            <div>
+              <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 flex items-center">
+                <i class="fas fa-notes-medical text-primary-500 mr-2"></i>
+                Possible Conditions
+              </h3>
+              <div id="conditionsList" class="space-y-4">
+                <!-- Conditions will be added here -->
+              </div>
+            </div>
+
+            <!-- Advice & Recommendations -->
+            <div>
+              <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 flex items-center">
+                <i class="fas fa-comment-medical text-primary-500 mr-2"></i>
+                Recommendations
+              </h3>
+
+              <div class="space-y-6">
+                <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 rounded-r-md">
+                  <h4 class="font-semibold text-blue-700 dark:text-blue-300 mb-2">Recommended Actions</h4>
+                  <ul id="recommendedActions" class="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+                    <!-- Actions will be added here -->
+                  </ul>
+                </div>
+
+                <div class="bg-indigo-50 dark:bg-indigo-900/30 border-l-4 border-indigo-500 p-4 rounded-r-md">
+                  <h4 class="font-semibold text-indigo-700 dark:text-indigo-300 mb-2">Lifestyle Considerations</h4>
+                  <ul id="lifestyleConsiderations" class="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+                    <!-- Considerations will be added here -->
+                  </ul>
+                </div>
+
+                <div class="bg-amber-50 dark:bg-amber-900/30 border-l-4 border-amber-500 p-4 rounded-r-md">
+                  <h4 class="font-semibold text-amber-700 dark:text-amber-300 mb-2">When to Seek Medical Attention</h4>
+                  <ul id="whenToSeekMedical" class="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+                    <!-- Advice will be added here -->
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-5 mb-6">
+            <h3 class="text-lg font-semibold mb-3 text-gray-700 dark:text-gray-300 flex items-center">
+              <i class="fas fa-book-medical text-primary-500 mr-2"></i>
+              Medical Terminology
+            </h3>
+            <div id="medicalTerminology" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <!-- Medical terminology will be added here -->
+
+            </div>
+          </div>
+
+          <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-5 mb-8">
+            <h3 class="text-lg font-semibold mb-2 text-yellow-800 dark:text-yellow-300 flex items-center">
+              <i class="fas fa-exclamation-circle mr-2"></i>
+              Important Disclaimer
+            </h3>
+            <p class="text-yellow-700 dark:text-yellow-400 text-sm">
+              This analysis is for educational purposes only and should not replace professional medical advice.
+              The information provided is based on the symptoms you've entered and general medical knowledge.
+              Always consult with a healthcare provider for proper diagnosis and treatment.
+            </p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <button id="startOverBtn" class="w-full sm:w-auto px-6 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md font-semibold transition flex items-center justify-center">
+              <i class="fas fa-redo mr-2"></i>
+              Start Over
+            </button>
+            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+              <button id="printResultsBtn" class="w-full sm:w-auto px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-md font-semibold transition flex items-center justify-center">
+                <i class="fas fa-print mr-2"></i>
+                Print Results
+              </button>
+              <button id="findDoctorBtn" class="w-full sm:w-auto px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-md font-semibold transition shadow-md hover:shadow-lg flex items-center justify-center">
+                <i class="fas fa-user-md mr-2"></i>
+                Find a Doctor
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-white dark:bg-gray-900 py-6 mt-auto">
+    <div class="container mx-auto px-4">
+      <div class="text-center text-sm text-gray-500 dark:text-gray-400">
+        <p>MediAssist Symptom Checker is an educational tool and does not provide medical advice.</p>
+        <p class="mt-2">Always consult with a qualified healthcare provider for medical concerns.</p>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- Help Modal -->
+
+<div id="helpModal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-gray-900 rounded-xl shadow-2xl p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">How to Use This Tool</h3>
+      <button id="closeHelpBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </div>
+    <div class="space-y-4 text-gray-700 dark:text-gray-300 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center mr-3">1</div>
+        <div>
+          <h4 class="font-semibold">Select Symptoms</h4>
+          <p class="text-gray-600 dark:text-gray-400">Choose all symptoms you're experiencing. You can search or browse by category.</p>
+        </div>
+      </div>
+      <div class="flex">
+        <div class="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center mr-3">2</div>
+        <div>
+          <h4 class="font-semibold">Enter Patient Information</h4>
+          <p class="text-gray-600 dark:text-gray-400">Provide your basic health details, medical history, and lifestyle information.</p>
+        </div>
+      </div>
+      <div class="flex">
+        <div class="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center mr-3">3</div>
+        <div>
+          <h4 class="font-semibold">Review Your Information</h4>
+          <p class="text-gray-600 dark:text-gray-400">Check all the details before submission. You can go back to make changes.</p>
+        </div>
+      </div>
+      <div class="flex">
+        <div class="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center mr-3">4</div>
+        <div>
+          <h4 class="font-semibold">View Your Results</h4>
+          <p class="text-gray-600 dark:text-gray-400">Get possible conditions based on your symptoms and recommendations for next steps.</p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 mb-4">
+      <p class="text-yellow-700 dark:text-yellow-400 text-sm">
+        <i class="fas fa-exclamation-circle mr-2"></i>
+        This tool is for educational purposes only and does not replace professional medical advice. Always consult with a healthcare provider for proper diagnosis and treatment.
+      </p>
+    </div>
+    <button id="helpGotItBtn" class="w-full px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-md font-semibold transition">
+      Got It
+    </button>
+  </div>
+</div>
+
+<!-- JavaScripts that contain en external APIs used and others -->
+
+<script>
+  // Set dark mode based on user preference
+
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.classList.add('dark');
+  }
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+    if (event.matches) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+
+    // Common symptom list by categories
+
+    const commonSymptoms = {
+      head: [
+        { id: 'severe-headache', name: 'Severe headache', icon: 'fa-head-side-virus' },
+        { id: 'mild-headache', name: 'Mild headache', icon: 'fa-head-side' },
+        { id: 'sensitivity-to-light', name: 'Sensitivity to light', icon: 'fa-eye' },
+        { id: 'dizziness', name: 'Dizziness', icon: 'fa-person-falling' },
+        { id: 'blurred-vision', name: 'Blurred vision', icon: 'fa-eye-low-vision' },
+        { id: 'ear-pain', name: 'Ear pain', icon: 'fa-ear' },
+        { id: 'ringing-in-ears', name: 'Ringing in ears', icon: 'fa-ear-listen' },
+        { id: 'sinus-pressure', name: 'Sinus pressure', icon: 'fa-head-side-cough' }
+      ],
+      chest: [
+        { id: 'chest-pain', name: 'Chest pain', icon: 'fa-heart-crack' },
+        { id: 'shortness-of-breath', name: 'Shortness of breath', icon: 'fa-lungs' },
+        { id: 'rapid-heartbeat', name: 'Rapid heartbeat', icon: 'fa-heart-pulse' },
+        { id: 'cough', name: 'Cough', icon: 'fa-head-side-cough' },
+        { id: 'wheezing', name: 'Wheezing', icon: 'fa-wind' },
+        { id: 'difficulty-breathing', name: 'Difficulty breathing', icon: 'fa-lungs-virus' }
+      ],
+      abdomen: [
+        { id: 'abdominal-pain', name: 'Abdominal pain', icon: 'fa-stomach' },
+        { id: 'nausea', name: 'Nausea', icon: 'fa-face-dizzy' },
+        { id: 'vomiting', name: 'Vomiting', icon: 'fa-toilet' },
+        { id: 'diarrhea', name: 'Diarrhea', icon: 'fa-toilet-paper' },
+        { id: 'constipation', name: 'Constipation', icon: 'fa-toilet-paper-slash' },
+        { id: 'bloating', name: 'Bloating', icon: 'fa-expand' }
+      ],
+      skin: [
+        { id: 'rash', name: 'Rash', icon: 'fa-allergies' },
+        { id: 'itching', name: 'Itching', icon: 'fa-hand-dots' },
+        { id: 'skin-redness', name: 'Skin redness', icon: 'fa-hand-dots' },
+        { id: 'swelling', name: 'Swelling', icon: 'fa-droplet' },
+        { id: 'bruising', name: 'Bruising', icon: 'fa-circle' }
+      ],
+      general: [
+        { id: 'fever', name: 'Fever', icon: 'fa-temperature-high' },
+        { id: 'fatigue', name: 'Fatigue', icon: 'fa-battery-quarter' },
+        { id: 'weakness', name: 'Weakness', icon: 'fa-dumbbell' },
+        { id: 'chills', name: 'Chills', icon: 'fa-snowflake' },
+        { id: 'sweating', name: 'Sweating', icon: 'fa-droplet' },
+        { id: 'joint-pain', name: 'Joint pain', icon: 'fa-bone' },
+        { id: 'muscle-pain', name: 'Muscle pain', icon: 'fa-person-walking' },
+        { id: 'loss-of-appetite', name: 'Loss of appetite', icon: 'fa-utensils-slash' },
+        { id: 'weight-loss', name: 'Weight loss', icon: 'fa-weight-scale' },
+        { id: 'sleep-problems', name: 'Sleep problems', icon: 'fa-bed' }
+      ]
+    };
+
+    // Variables to store user selections
+
+    let selectedSymptoms = [];
+    let currentStep = 1;
+
+    // DOM elements
+
+    const stepIndicators = {
+      1: document.getElementById('step1'),
+      2: document.getElementById('step2'),
+      3: document.getElementById('step3'),
+      4: document.getElementById('step4')
+    };
+
+    const stepContents = {
+      1: document.getElementById('step1Content'),
+      2: document.getElementById('step2Content'),
+      3: document.getElementById('step3Content'),
+      4: document.getElementById('step4Content')
+    };
+
+    // Functions to manage steps
+
+    function showStep(step) {
+      // Hide all steps
+      Object.values(stepContents).forEach(content => {
+        content.classList.add('hidden');
+      });
+
+      // Show the current step
+
+      stepContents[step].classList.remove('hidden');
+
+      // Reset step indicators
+
+      Object.entries(stepIndicators).forEach(([stepNum, indicator]) => {
+        indicator.classList.remove('step-active', 'step-completed');
+        if (parseInt(stepNum) < step) {
+          indicator.classList.add('step-completed');
+        } else if (parseInt(stepNum) === step) {
+          indicator.classList.add('step-active');
+        }
+      });
+
+      currentStep = step;
+    }
+
+    // Populate symptoms grid
+
+    function displaySymptoms(category = 'all') {
+      const symptomGrid = document.getElementById('symptomGrid');
+      symptomGrid.innerHTML = '';
+
+      let symptomsToShow = [];
+      if (category === 'all') {
+        // Flatten all categories and add them to symptomsToShow
+
+        Object.values(commonSymptoms).forEach(categorySymptoms => {
+          symptomsToShow = [...symptomsToShow, ...categorySymptoms];
+        });
+      } else {
+        symptomsToShow = commonSymptoms[category] || [];
+      }
+
+      if (symptomsToShow.length === 0) {
+        symptomGrid.innerHTML = '<p class="col-span-3 text-center text-gray-500 dark:text-gray-400 py-10">No symptoms found in this category.</p>';
+        return;
+      }
+
+      symptomsToShow.forEach(symptom => {
+        const isSelected = selectedSymptoms.some(s => s.id === symptom.id);
+        const card = document.createElement('div');
+        card.className = `symptom-card cursor-pointer rounded-lg p-4 transition flex items-center gap-3 ${
+                isSelected
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200'
+        }`;
+        card.setAttribute('data-symptom-id', symptom.id);
+
+        card.innerHTML = `
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full ${
+                isSelected
+                        ? 'bg-white bg-opacity-20'
+                        : 'bg-primary-100 dark:bg-primary-900'
+        }">
+                            <i class="fas ${symptom.icon} ${
+                isSelected
+                        ? 'text-white'
+                        : 'text-primary-500 dark:text-primary-400'
+        }"></i>
+                        </div>
+                        <span>${symptom.name}</span>
+                        ${isSelected ? '<i class="fas fa-check ml-auto text-white"></i>' : ''}
+                    `;
+
+        card.addEventListener('click', () => toggleSymptom(symptom));
+        symptomGrid.appendChild(card);
+      });
+    }
+
+    // Toggle symptom selection
+
+    function toggleSymptom(symptom) {
+      const index = selectedSymptoms.findIndex(s => s.id === symptom.id);
+
+      if (index === -1) {
+        // Add symptom
+
+        selectedSymptoms.push(symptom);
+      } else {
+        // Remove symptom
+
+        selectedSymptoms.splice(index, 1);
+      }
+
+      // Update UI
+
+      updateSelectedSymptomsUI();
+      displaySymptoms(document.querySelector('.category-button-selected')?.getAttribute('data-category') || 'all');
+    }
+
+    // Update the selected symptoms display
+
+    function updateSelectedSymptomsUI() {
+      const selectedSymptomsContainer = document.getElementById('selectedSymptoms');
+      const noSymptomsMessage = document.getElementById('noSymptomsMessage');
+
+      // Clear container
+
+      selectedSymptomsContainer.innerHTML = '';
+
+      if (selectedSymptoms.length === 0) {
+        selectedSymptomsContainer.appendChild(noSymptomsMessage);
+        return;
+      }
+
+      // Add each selected symptom
+
+      selectedSymptoms.forEach(symptom => {
+        const tag = document.createElement('div');
+        tag.className = 'animate-slide-in bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 px-3 py-2 rounded-full flex items-center gap-2';
+        tag.innerHTML = `
+                        <i class="fas ${symptom.icon} text-primary-500"></i>
+                        <span>${symptom.name}</span>
+                        <button class="remove-symptom text-gray-500 hover:text-red-500 transition ml-1" data-symptom-id="${symptom.id}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+        selectedSymptomsContainer.appendChild(tag);
+      });
+
+      // Add event listeners to remove buttons
+
+      document.querySelectorAll('.remove-symptom').forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const symptomId = button.getAttribute('data-symptom-id');
+          const symptomIndex = selectedSymptoms.findIndex(s => s.id === symptomId);
+
+          if (symptomIndex !== -1) {
+            selectedSymptoms.splice(symptomIndex, 1);
+            updateSelectedSymptomsUI();
+            displaySymptoms(document.querySelector('.category-button-selected')?.getAttribute('data-category') || 'all');
+          }
+        });
+      });
+    }
+
+    // Initialize UI
+
+    function initializeUI() {
+      // Display "all" symptoms by default
+
+      displaySymptoms('all');
+
+      // Set first category as selected
+
+      document.querySelector('[data-category="all"]').classList.add('category-button-selected');
+
+      // Add default selected symptoms
+
+      const defaultSymptoms = [
+        commonSymptoms.head.find(s => s.id === 'severe-headache'),
+        commonSymptoms.general.find(s => s.id === 'fever'),
+        commonSymptoms.general.find(s => s.id === 'fatigue'),
+        commonSymptoms.head.find(s => s.id === 'sensitivity-to-light')
+      ].filter(Boolean);
+
+      selectedSymptoms = [...defaultSymptoms];
+      updateSelectedSymptomsUI();
+      displaySymptoms('all');
+
+      // Set up category buttons
+
+      document.querySelectorAll('.category-button').forEach(button => {
+        button.addEventListener('click', () => {
+          // Remove selected class from all buttons
+          document.querySelectorAll('.category-button').forEach(btn => {
+            btn.classList.remove('category-button-selected');
+          });
+
+          // Add selected class to clicked button
+
+          button.classList.add('category-button-selected');
+
+          // Display symptoms for the selected category
+
+          displaySymptoms(button.getAttribute('data-category'));
+        });
+      });
+
+      // Set up symptom search
+
+      const symptomSearch = document.getElementById('symptomSearch');
+      symptomSearch.addEventListener('input', () => {
+        const searchTerm = symptomSearch.value.toLowerCase();
+
+        if (searchTerm.trim() === '') {
+          // If search is empty, show the selected category
+
+          const selectedCategory = document.querySelector('.category-button-selected')?.getAttribute('data-category') || 'all';
+          displaySymptoms(selectedCategory);
+          return;
+        }
+
+        // Filter symptoms across all categories
+
+        const symptomGrid = document.getElementById('symptomGrid');
+        symptomGrid.innerHTML = '';
+
+        let matchedSymptoms = [];
+
+        Object.values(commonSymptoms).forEach(categorySymptoms => {
+          const filtered = categorySymptoms.filter(symptom =>
+                  symptom.name.toLowerCase().includes(searchTerm)
+          );
+          matchedSymptoms = [...matchedSymptoms, ...filtered];
+        });
+
+        if (matchedSymptoms.length === 0) {
+          symptomGrid.innerHTML = '<p class="col-span-3 text-center text-gray-500 dark:text-gray-400 py-10">No symptoms found matching your search.</p>';
+          return;
+        }
+
+        matchedSymptoms.forEach(symptom => {
+          const isSelected = selectedSymptoms.some(s => s.id === symptom.id);
+          const card = document.createElement('div');
+          card.className = `symptom-card cursor-pointer rounded-lg p-4 transition flex items-center gap-3 ${
+                  isSelected
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200'
+          }`;
+          card.setAttribute('data-symptom-id', symptom.id);
+
+          card.innerHTML = `
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full ${
+                  isSelected
+                          ? 'bg-white bg-opacity-20'
+                          : 'bg-primary-100 dark:bg-primary-900'
+          }">
+                                <i class="fas ${symptom.icon} ${
+                  isSelected
+                          ? 'text-white'
+                          : 'text-primary-500 dark:text-primary-400'
+          }"></i>
+                            </div>
+                            <span>${symptom.name}</span>
+                            ${isSelected ? '<i class="fas fa-check ml-auto text-white"></i>' : ''}
+                        `;
+
+          card.addEventListener('click', () => toggleSymptom(symptom));
+          symptomGrid.appendChild(card);
+        });
+      });
+
+      // Setup tag inputs
+
+      setupTagInput('medicalHistoryInput', 'medicalHistoryTags', 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200');
+      setupTagInput('medicationsInput', 'medicationTags', 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200');
+      setupTagInput('allergiesInput', 'allergyTags', 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200');
+    }
+
+    // Setup tag input
+
+    function setupTagInput(inputId, tagsContainerId, tagClass) {
+      const input = document.getElementById(inputId);
+      const tagsContainer = document.getElementById(tagsContainerId);
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && input.value.trim() !== '') {
+          e.preventDefault();
+
+          const tag = document.createElement('span');
+          tag.className = `tag ${tagClass}`;
+          tag.innerHTML = `
+                            ${input.value.trim()} <i class="fas fa-times"></i>
+                        `;
+
+          // Add click event to remove tag
+
+          tag.querySelector('i').addEventListener('click', () => {
+            tag.remove();
+          });
+
+          tagsContainer.appendChild(tag);
+          input.value = '';
+        }
+      });
+
+      // Make sure existing tags can be removed
+
+      tagsContainer.querySelectorAll('.tag i').forEach(icon => {
+        icon.addEventListener('click', () => {
+          icon.parentElement.remove();
+        });
+      });
+    }
+
+    // Update review page with current data
+
+    function updateReviewPage() {
+      // Update symptoms
+
+      const reviewSymptoms = document.getElementById('reviewSymptoms');
+      reviewSymptoms.innerHTML = '';
+
+      selectedSymptoms.forEach(symptom => {
+        const tag = document.createElement('span');
+        tag.className = 'bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 px-3 py-1 rounded-full flex items-center gap-2 text-sm';
+        tag.innerHTML = `
+                        <i class="fas ${symptom.icon} text-primary-500"></i>
+                        <span>${symptom.name}</span>
+                    `;
+        reviewSymptoms.appendChild(tag);
+      });
+
+      // Update patient info
+
+      document.getElementById('reviewName').textContent = document.getElementById('patientName').value || '-';
+      document.getElementById('reviewAge').textContent = document.getElementById('patientAge').value;
+      document.getElementById('reviewGender').textContent = document.querySelector('input[name="gender"]:checked').value;
+      document.getElementById('reviewHeight').textContent = `${document.getElementById('patientHeight').value} cm`;
+      document.getElementById('reviewWeight').textContent = `${document.getElementById('patientWeight').value} kg`;
+
+      // Update medical history, medications, allergies
+
+      updateReviewTags('medicalHistoryTags', 'reviewMedicalHistory', 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200');
+      updateReviewTags('medicationTags', 'reviewMedications', 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200');
+      updateReviewTags('allergyTags', 'reviewAllergies', 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200');
+
+      // Update lifestyle
+
+      document.getElementById('reviewSmoking').textContent = document.getElementById('lifestyleSmoking').options[document.getElementById('lifestyleSmoking').selectedIndex].text;
+      document.getElementById('reviewAlcohol').textContent = document.getElementById('lifestyleAlcohol').options[document.getElementById('lifestyleAlcohol').selectedIndex].text;
+      document.getElementById('reviewExercise').textContent = document.getElementById('lifestyleExercise').options[document.getElementById('lifestyleExercise').selectedIndex].text;
+      document.getElementById('reviewDiet').textContent = document.getElementById('lifestyleDiet').options[document.getElementById('lifestyleDiet').selectedIndex].text;
+    }
+
+    // Helper function to update review tags
+
+    function updateReviewTags(sourceId, targetId, tagClass) {
+      const source = document.getElementById(sourceId);
+      const target = document.getElementById(targetId);
+      target.innerHTML = '';
+
+      const tags = source.querySelectorAll('.tag');
+
+      if (tags.length === 0) {
+        const noneTag = document.createElement('span');
+        noneTag.className = 'text-gray-500 dark:text-gray-400';
+        noneTag.textContent = 'None';
+        target.appendChild(noneTag);
+        return;
+      }
+
+      tags.forEach(tag => {
+        const reviewTag = document.createElement('span');
+        reviewTag.className = `${tagClass} px-3 py-1 rounded-full inline-block text-sm`;
+        reviewTag.textContent = tag.textContent.replace('×', '').trim();
+        target.appendChild(reviewTag);
+      });
+    }
+
+    // Submit diagnosis request to API
+
+    async function submitDiagnosis() {
+      // Show loading state
+      document.getElementById('diagnosisLoading').classList.remove('hidden');
+      document.getElementById('diagnosisResults').classList.add('hidden');
+      document.getElementById('diagnosisError').classList.add('hidden');
+
+      // Gather all patient data
+
+      const patientName = document.getElementById('patientName').value;
+      const symptomsList = selectedSymptoms.map(s => s.name.toLowerCase());
+      const gender = document.querySelector('input[name="gender"]:checked').value;
+      const age = parseInt(document.getElementById('patientAge').value);
+      const height = parseInt(document.getElementById('patientHeight').value);
+      const weight = parseInt(document.getElementById('patientWeight').value);
+
+      // Gather medical history, medications, allergies
+
+      const medicalHistory = Array.from(document.getElementById('medicalHistoryTags').querySelectorAll('.tag'))
+              .map(tag => tag.textContent.replace('×', '').trim());
+
+      const medications = Array.from(document.getElementById('medicationTags').querySelectorAll('.tag'))
+              .map(tag => tag.textContent.replace('×', '').trim());
+
+      const allergies = Array.from(document.getElementById('allergyTags').querySelectorAll('.tag'))
+              .map(tag => tag.textContent.replace('×', '').trim());
+
+      // Gather lifestyle info
+
+      const smoking = document.getElementById('lifestyleSmoking').value;
+      const alcohol = document.getElementById('lifestyleAlcohol').value;
+      const exercise = document.getElementById('lifestyleExercise').value;
+      const diet = document.getElementById('lifestyleDiet').value;
+
+      // Prepare data for API call
+
+      const data = JSON.stringify({
+        symptoms: symptomsList,
+        patientInfo: {
+          age: age,
+          gender: gender,
+          height: height,
+          weight: weight,
+          medicalHistory: medicalHistory,
+          currentMedications: medications,
+          allergies: allergies,
+          lifestyle: {
+            smoking: smoking === 'false' ? false : smoking,
+            alcohol: alcohol,
+            exercise: exercise,
+            diet: diet
+          }
+        },
+        lang: 'en'
+      });
+// API call for the analysis by the help of AI MEDICAL DIAGNOSIS API
+
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        // Set a timeout to ensure we don't wait forever
+
+        xhr.timeout = 15000; // 15 seconds timeout
+
+        xhr.addEventListener('readystatechange', function () {
+          if (this.readyState === this.DONE) {
+            if (this.status === 200) {
+              try {
+                const response = JSON.parse(this.responseText);
+                displayDiagnosisResults(response);
+              } catch (e) {
+                showDiagnosisError("Error parsing API response: " + e.message);
+              }
+            } else {
+              showDiagnosisError("API request failed with status: " + this.status);
+            }
+          }
+        });
+
+        xhr.addEventListener('timeout', function() {
+          showDiagnosisError("Request timed out. Please try again later.");
+        });
+
+        xhr.addEventListener('error', function() {
+          showDiagnosisError("Network error occurred. Please check your connection.");
+        });
+
+        xhr.open('POST', 'https://ai-medical-diagnosis-api-symptoms-to-results.p.rapidapi.com/analyzeSymptomsAndDiagnose?noqueue=1');
+        xhr.setRequestHeader('x-rapidapi-key', '85270c2e8fmshadf2fcbab140ad3p11072bjsn6091dbbd3b34');
+        xhr.setRequestHeader('x-rapidapi-host', 'ai-medical-diagnosis-api-symptoms-to-results.p.rapidapi.com');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.send(data);
+      } catch (error) {
+        showDiagnosisError("Error making API request: " + error.message);
+      }
+    }
+
+    // Display diagnosis results
+
+    function displayDiagnosisResults(response) {
+      try {
+        // Hide loading and show results
+
+        document.getElementById('diagnosisLoading').classList.add('hidden');
+        document.getElementById('diagnosisResults').classList.remove('hidden');
+
+        // Parse the response
+
+        let result = response;
+        if (response.result) {
+          result = response.result;
+        }
+
+        const analysis = result.analysis || {};
+
+        // Display possible conditions
+
+        const conditionsList = document.getElementById('conditionsList');
+        conditionsList.innerHTML = '';
+
+        if (analysis.possibleConditions && analysis.possibleConditions.length > 0) {
+          analysis.possibleConditions.forEach((condition, index) => {
+            const conditionEl = document.createElement('div');
+            conditionEl.className = 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden transition hover:shadow-md';
+
+            let riskLevelClass = 'bg-blue-500';
+            if (condition.riskLevel === 'High') {
+              riskLevelClass = 'bg-red-500';
+            } else if (condition.riskLevel === 'Medium') {
+              riskLevelClass = 'bg-yellow-500';
+            } else if (condition.riskLevel === 'Low') {
+              riskLevelClass = 'bg-green-500';
+            }
+
+            conditionEl.innerHTML = `
+                                <div class="flex items-center p-4 border-b border-gray-200 dark:border-gray-700">
+                                    <div class="flex flex-col flex-grow">
+                                        <div class="flex items-center">
+                                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-100">${condition.condition}</h4>
+                                            ${condition.riskLevel ? `
+                                                <span class="ml-3 px-2 py-1 text-xs font-medium text-white rounded-full ${riskLevelClass}">
+                                                    ${condition.riskLevel} Risk
+                                                </span>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <p class="text-gray-600 dark:text-gray-400 mb-3">${condition.description || ''}</p>
+
+                                    ${condition.matchingSymptoms ? `
+                                        <div class="mb-3">
+                                            <h5 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Matching Symptoms</h5>
+                                            <div class="flex flex-wrap gap-2">
+                                                ${condition.matchingSymptoms.map(symptom =>
+                    `<span class="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-sm">
+                                                        <i class="fas fa-check-circle text-green-500 mr-1"></i> ${symptom}
+                                                    </span>`
+            ).join('')}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+
+                                    ${condition.additionalInfo ? `
+                                        <div class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                            <p><i class="fas fa-info-circle text-blue-500 mr-1"></i> ${condition.additionalInfo}</p>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+
+            conditionsList.appendChild(conditionEl);
+          });
+        } else {
+          conditionsList.innerHTML = `
+                            <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 text-center">
+                                <i class="fas fa-info-circle text-blue-500 text-2xl mb-2"></i>
+                                <p class="text-gray-600 dark:text-gray-400">No specific conditions were identified based on the provided symptoms.</p>
+                                <p class="text-gray-600 dark:text-gray-400 mt-2">Please consult with a healthcare professional for a proper diagnosis.</p>
+                            </div>
+                        `;
+        }
+
+        // General advice
+
+        const advice = analysis.generalAdvice || {};
+
+        // Recommended actions
+
+        const recommendedActions = document.getElementById('recommendedActions');
+        recommendedActions.innerHTML = '';
+
+        if (advice.recommendedActions && advice.recommendedActions.length > 0) {
+          advice.recommendedActions.forEach(action => {
+            const li = document.createElement('li');
+            li.className = 'text-gray-700 dark:text-gray-300';
+            li.textContent = action;
+            recommendedActions.appendChild(li);
+          });
+        } else {
+          recommendedActions.innerHTML = `
+                            <li class="text-gray-700 dark:text-gray-300">Stay hydrated and get adequate rest.</li>
+                            <li class="text-gray-700 dark:text-gray-300">Monitor your symptoms and seek medical attention if they worsen.</li>
+                        `;
+        }
+
+        // Lifestyle considerations
+
+        const lifestyleConsiderations = document.getElementById('lifestyleConsiderations');
+        lifestyleConsiderations.innerHTML = '';
+
+        if (advice.lifestyleConsiderations && advice.lifestyleConsiderations.length > 0) {
+          advice.lifestyleConsiderations.forEach(consideration => {
+            const li = document.createElement('li');
+            li.className = 'text-gray-700 dark:text-gray-300';
+            li.textContent = consideration;
+            lifestyleConsiderations.appendChild(li);
+          });
+        } else {
+          lifestyleConsiderations.innerHTML = `
+                            <li class="text-gray-700 dark:text-gray-300">Maintain a balanced diet and regular sleep schedule.</li>
+                            <li class="text-gray-700 dark:text-gray-300">Avoid triggers that may worsen your symptoms.</li>
+                        `;
+        }
+
+        // When to seek medical attention
+
+        const whenToSeekMedical = document.getElementById('whenToSeekMedical');
+        whenToSeekMedical.innerHTML = '';
+
+        if (advice.whenToSeekMedicalAttention && advice.whenToSeekMedicalAttention.length > 0) {
+          advice.whenToSeekMedicalAttention.forEach(advice => {
+            const li = document.createElement('li');
+            li.className = 'text-gray-700 dark:text-gray-300';
+            li.textContent = advice;
+            whenToSeekMedical.appendChild(li);
+          });
+        } else {
+          whenToSeekMedical.innerHTML = `
+                            <li class="text-gray-700 dark:text-gray-300">If symptoms persist for more than a few days.</li>
+                            <li class="text-gray-700 dark:text-gray-300">If you develop new or worsening symptoms.</li>
+                            <li class="text-gray-700 dark:text-gray-300">If you have difficulty breathing, severe pain, or feel extremely unwell.</li>
+                        `;
+        }
+
+        // Medical terminology
+
+        const medicalTerminology = document.getElementById('medicalTerminology');
+        medicalTerminology.innerHTML = '';
+
+        const resources = result.educationalResources || {};
+        const terminology = resources.medicalTerminology || {};
+
+        if (Object.keys(terminology).length > 0) {
+          Object.entries(terminology).forEach(([term, definition]) => {
+            const div = document.createElement('div');
+            div.className = 'bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700';
+            div.innerHTML = `
+                                <h4 class="font-semibold text-gray-800 dark:text-gray-100 mb-1">${term}</h4>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">${definition}</p>
+                            `;
+            medicalTerminology.appendChild(div);
+          });
+        } else {
+          medicalTerminology.innerHTML = `
+                            <div class="col-span-2 text-center py-3 text-gray-500 dark:text-gray-400">
+                                <p>No specific medical terminology provided.</p>
+                            </div>
+                        `;
+        }
+      } catch (error) {
+        console.error("Error displaying results:", error);
+        showDiagnosisError("Error displaying results: " + error.message);
+      }
+    }
+
+    // Show diagnosis error
+
+    function showDiagnosisError(message) {
+      document.getElementById('diagnosisLoading').classList.add('hidden');
+      document.getElementById('diagnosisResults').classList.add('hidden');
+
+      const errorState = document.getElementById('diagnosisError');
+      errorState.classList.remove('hidden');
+
+      document.getElementById('errorMessage').textContent = message;
+    }
+
+    // Modal functionality
+
+    function setupModalFunctionality() {
+      const helpModal = document.getElementById('helpModal');
+      const helpBtn = document.getElementById('helpBtn');
+      const closeHelpBtn = document.getElementById('closeHelpBtn');
+      const helpGotItBtn = document.getElementById('helpGotItBtn');
+
+      function openModal() {
+        helpModal.classList.remove('hidden');
+      }
+
+      function closeModal() {
+        helpModal.classList.add('hidden');
+      }
+
+      helpBtn.addEventListener('click', openModal);
+      closeHelpBtn.addEventListener('click', closeModal);
+      helpGotItBtn.addEventListener('click', closeModal);
+    }
+
+    // Step navigation
+
+    function setupStepNavigation() {
+      // Step 1 -> Step 2
+
+      document.getElementById('nextToStep2').addEventListener('click', () => {
+        if (selectedSymptoms.length === 0) {
+          alert('Please select at least one symptom before continuing.');
+          return;
+        }
+        showStep(2);
+      });
+
+      // Step 2 -> Step 1
+
+      document.getElementById('backToStep1').addEventListener('click', () => {
+        showStep(1);
+      });
+
+      // Step 2 -> Step 3
+
+      document.getElementById('nextToStep3').addEventListener('click', () => {
+        updateReviewPage();
+        showStep(3);
+      });
+
+      // Step 3 -> Step 2
+
+      document.getElementById('backToStep2').addEventListener('click', () => {
+        showStep(2);
+      });
+
+      // Step 3 -> Edit symptoms (Step 1)
+
+      document.getElementById('editSymptoms').addEventListener('click', () => {
+        showStep(1);
+      });
+
+      // Step 3 -> Edit patient info (Step 2)
+
+      document.getElementById('editPatientInfo').addEventListener('click', () => {
+        showStep(2);
+      });
+
+      // Step 3 -> Step 4 (Submit Diagnosis)
+
+      document.getElementById('submitDiagnosis').addEventListener('click', () => {
+        showStep(4);
+        submitDiagnosis();
+      });
+
+      // Step 4 -> Try Again
+
+      document.getElementById('tryAgainBtn').addEventListener('click', () => {
+        submitDiagnosis();
+      });
+
+      // Step 4 -> Start Over
+
+      document.getElementById('startOverBtn').addEventListener('click', () => {
+        // Reset to default state
+        showStep(1);
+      });
+
+      // Step 4 -> Print Results
+
+      document.getElementById('printResultsBtn').addEventListener('click', () => {
+        window.print();
+      });
+
+      // Step 4 -> Find Doctor (placeholder functionality)
+
+      document.getElementById('findDoctorBtn').addEventListener('click', () => {
+        alert('This feature would connect you with healthcare providers in your area.');
+      });
+    }
+
+    // Initialize everything
+
+    initializeUI();
+    setupModalFunctionality();
+    setupStepNavigation();
+  });
+</script>
+</body>
+</html>
