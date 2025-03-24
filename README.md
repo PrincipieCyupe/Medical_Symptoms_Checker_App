@@ -1,7 +1,7 @@
-MEDIASSIST SYMPTOM CHECKER
+**MEDIASSIST SYMPTOM CHECKER**
 -----------------------------------
 
-** Table of Contents**
+**Table of Contents**
 
 1. Overview
 2. Features
