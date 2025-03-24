@@ -1,1 +1,4 @@
-Medical_Symptoms_Checker_App
+# MediAssist Symptom Checker
+
+'''Table of Contents'''
+
