@@ -28,19 +28,23 @@ Important Disclaimer: This application is for educational purposes only and shou
 - Category-based filtering (head, chest, abdomen, skin, general)
 - Searchable symptom database
 - Visual selection with clear feedback
+  
 **2.2 Comprehensive Patient Information Collection**
 - Demographics (name, age, gender, height, weight)
 - Medical history with tagging system
 - Current medications and allergies tracking
 - Lifestyle factors assessment
+  
 **2.3 AI-Powered Symptom Analysis**
 - Integration with medical diagnosis API
 - Risk level assessment for potential conditions
 - Symptom-condition correlation analysis
+  
 **2.4 Personalized Health Recommendations**
 - Condition-specific action recommendations
 - Lifestyle modification suggestions
 - Guidelines for when to seek medical attention
+  
 **2.4 Responsive User Experience**
 - Mobile-first design approach
 - Step-by-step guided process with progress indicators
