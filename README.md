@@ -67,7 +67,7 @@ Important Disclaimer: This application is for educational purposes only and shou
 - Deployment:
     Deployed on nginx and haproxy for load balancing
 
-  **5. API INTERACTION**
+**5. API INTERACTION**
   -------------------------------------
 The application integrates with the AI Medical Diagnosis API from RapidAPI to process symptoms and provide potential diagnoses. This API analyzes user-provided symptoms against a comprehensive medical database to identify potential conditions and offers recommendations.
 
