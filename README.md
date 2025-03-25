@@ -52,6 +52,7 @@ Important Disclaimer: This application is for educational purposes only and shou
   
  **3. DEMO**
  --------------------
+ **A link to a demo video (demonstrating how to use application locally and how to access it online)** : [https://drive.google.com/file/d/1kOi_aiEHSykTmvyIAZEdMFm_C68cGeyq/view?usp=sharing](url)
  Open this link to access Medical Symptom Checker; [https://www.principie.tech](url)
  
  **4. Technology used:**
