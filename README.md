@@ -73,7 +73,7 @@ The application integrates with the AI Medical Diagnosis API from RapidAPI to pr
 
 API Documententation: via this link to access the documentation [https://rapidapi.com/bilgisamapi-api2/api/ai-medical-diagnosis-api-symptoms-to-results](url)
 
-**6 LOCAL DEVELOPMENT SETUP**
+**6. LOCAL DEVELOPMENT SETUP**
 ----------------------------------
 
 Follow these steps to set up the project for local development:
@@ -85,7 +85,7 @@ Follow these steps to set up the project for local development:
    OPEN THE PROJECT:
      You can simply open the index.html file in your browser as this is a purely front-end application
 
-**7 DEPLOYMENT**
+**7. DEPLOYMENT**
 ------------------------------------
 **7.1 Prerequisites**
 Two web servers:
@@ -100,13 +100,13 @@ Load balancer:
 **7.3 SSL certificate**
   -  From lb-01 , I created a certificate using **certbot**, issued by Letsencrypt and signed by it. So, it can be secure as it is.
     
-**8 CHALLENGES AND SOLUTIONS**
+**8. CHALLENGES AND SOLUTIONS**
 -------------------------------------------------
 **API Rate Limiting**
      Challenge: RapidAPI imposes request limits on free tier accounts.
      solution: upgrading to a paid plan
 
-**9 CREDITS and ACKNOWLEDGEMENT**
+**9. CREDITS and ACKNOWLEDGEMENT**
 ----------------------------------------------------
 
 API USED: ** AI MEDICAL DIAGNOSIS API from RapidAPI**
