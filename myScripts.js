@@ -485,8 +485,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             xhr.open('POST', 'https://ai-medical-diagnosis-api-symptoms-to-results.p.rapidapi.com/analyzeSymptomsAndDiagnose?noqueue=1');
-            xhr.setRequestHeader('x-rapidapi-key', '85270c2e8fmshadf2fcbab140ad3p11072bjsn6091dbbd3b34');
-            xhr.setRequestHeader('x-rapidapi-host', 'ai-medical-diagnosis-api-symptoms-to-results.p.rapidapi.com');
+            xhr.setRequestHeader('x-rapidapi-key', config.rapidApiKey);
+            xhr.setRequestHeader('x-rapidapi-host', config.rapidApiHost);
             xhr.setRequestHeader('Content-Type', 'application/json');
 
             xhr.send(data);
