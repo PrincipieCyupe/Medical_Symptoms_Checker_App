@@ -1,22 +1,6 @@
-# Configuration file with API key
+# API keys and sensitive configuration
 config.js
 
-# OS specific files
+# OS generated files
 .DS_Store
-.DS_Store?
-._*
 Thumbs.db
-desktop.ini
-
-# Editor directories and files
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Logs
-*.log
-npm-debug.log*
-
-# If you start using package managers later
-node_modules/
