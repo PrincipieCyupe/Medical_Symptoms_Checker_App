@@ -90,7 +90,7 @@ Follow these steps to set up the project for local development:
 **7.1 Prerequisites**
 
 Two web servers:
-  - **Web-01** and **Web-02** (where nginx is installed, and I configured /etc/nginx/sites_available/default, this file is where I hosted my application for instance: I put my html inside this /var/www/html so that it can be accessed by visiting the IP_Address)
+  - **Web-01** and **Web-02** (where nginx is installed, and I configured /etc/nginx/sites_available/default, this file is where I hosted my application for instance: I put all my files used to make application including; HTML, CSS, and JS, all were put inside this /var/www/html so that it can be accessed by visiting the IP_Address)
     
 Load balancer:
   -Through **lb-01** (where **haproxy** is installed **to distribute the requests** through those two servers. And those were done through configuring an haproxy config file ( /etc/haproxy/haproxy.cfg ), So you can access it through linking up to the IP_address of this lb-01)
