@@ -1,0 +1,207 @@
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+.animate-pulse-slow {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.animate-slide-in {
+    animation: slideIn 0.3s ease forwards;
+}
+
+/* Progress bar animation */
+@keyframes fillProgress {
+    from { width: 0; }
+    to { width: 100%; }
+}
+.animate-progress {
+    animation: fillProgress 0.8s ease-out forwards;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(93, 92, 222, 0.5);
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(93, 92, 222, 0.7);
+}
+
+/* Step indicators */
+.step-indicator {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.step-indicator::after {
+    content: '';
+    position: absolute;
+    height: 3px;
+    background-color: #CBD5E1;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 100%;
+    width: calc(100% - 20px);
+    z-index: -1;
+}
+
+.step-indicator:last-child::after {
+    display: none;
+}
+
+.step-active {
+    background-color: #5D5CDE;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(93, 92, 222, 0.2);
+}
+
+.step-completed {
+    background-color: #5D5CDE;
+    color: white;
+}
+
+.step-completed::after {
+    background-color: #5D5CDE;
+}
+
+/* Symptom card animation */
+.symptom-card {
+    transition: all 0.2s ease-out;
+}
+.symptom-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Ripple effect on buttons */
+.btn-ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-ripple:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform .5s, opacity 1s;
+}
+
+.btn-ripple:active:after {
+    transform: scale(0, 0);
+    opacity: .3;
+    transition: 0s;
+}
+
+.dark .btn-ripple:after {
+    background-image: radial-gradient(circle, #333 10%, transparent 10.01%);
+}
+
+/* Category selection styles */
+.category-button {
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.category-button:hover {
+    transform: translateY(-2px);
+}
+
+.category-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: width 0.3s ease;
+    z-index: 0;
+}
+
+.category-button:hover::before {
+    width: 100%;
+}
+
+.category-button-selected {
+    background-color: #5D5CDE;
+    color: white;
+}
+
+/* Glow effect for interactive elements */
+.interactive-glow:hover {
+    box-shadow: 0 0 10px rgba(93, 92, 222, 0.5);
+}
+.dark .interactive-glow:hover {
+    box-shadow: 0 0 10px rgba(93, 92, 222, 0.7);
+}
+
+/* Tag styles */
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 50px;
+    font-size: 14px;
+    margin: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tag i {
+    margin-left: 6px;
+    font-size: 10px;
+}
+
+.tag:hover {
+    transform: scale(1.05);
+}
+
+.tag-selected {
+    background-color: #5D5CDE;
+    color: white;
+}
+
+.dark .tag-selected {
+    background-color: #5D5CDE;
+    color: white;
+}
