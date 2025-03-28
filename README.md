@@ -88,6 +88,7 @@ Follow these steps to set up the project for local development:
 **7. DEPLOYMENT**
 ------------------------------------
 **7.1 Prerequisites**
+
 Two web servers:
   - **Web-01** and **Web-02** (where nginx is installed, and I configured /etc/nginx/sites_available/default, this file is where I hosted my application for instance: I put my html inside this /var/www/html so that it can be accessed by visiting the IP_Address)
     
