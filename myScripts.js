@@ -222,15 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Set first category as selected
         document.querySelector('[data-category="all"]').classList.add('category-button-selected');
 
-        // Add default selected symptoms
-        const defaultSymptoms = [
-            commonSymptoms.head.find(s => s.id === 'severe-headache'),
-            commonSymptoms.general.find(s => s.id === 'fever'),
-            commonSymptoms.general.find(s => s.id === 'fatigue'),
-            commonSymptoms.head.find(s => s.id === 'sensitivity-to-light')
-        ].filter(Boolean);
-
-        selectedSymptoms = [...defaultSymptoms];
+        selectedSymptoms = [];
         updateSelectedSymptomsUI();
         displaySymptoms('all');
 
