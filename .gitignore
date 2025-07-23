@@ -1,6 +1,4 @@
 # API keys and sensitive configuration
 config.js
 
-# OS generated files
-.DS_Store
-Thumbs.db
+
